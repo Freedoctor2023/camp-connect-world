@@ -35,16 +35,21 @@ const Index = () => {
         setTimeout(() => {
           window.history.replaceState({}, document.title, window.location.pathname);
           
-          // Redirect to home page after successful authentication
-          if (user) {
-            navigate('/', { replace: true });
-          }
+          // Force redirect to home page after OAuth callback
+          navigate('/', { replace: true });
         }, 1000);
       }
     };
 
     handleOAuthCallback();
-  }, [navigate, user]);
+  }, [navigate]);
+
+  // Redirect authenticated users to home page
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/', { replace: true });
+    }
+  }, [loading, user, navigate]);
 
   return (
     <SidebarProvider>
