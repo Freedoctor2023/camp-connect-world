@@ -9,6 +9,7 @@ import SponsorCamp from "@/components/SponsorCamp";
 import BusinessRequest from "@/components/BusinessRequest";
 import ProposalsPage from "@/components/ProposalsPage";
 import AdminPanel from "@/components/AdminPanel";
+import AuthPage from "@/components/AuthPage";
 
 const Index = () => {
   return (
@@ -19,7 +20,10 @@ const Index = () => {
           <header className="h-16 flex items-center justify-between border-b bg-background px-4">
             <div className="flex items-center gap-4">
               <SidebarTrigger />
-              <h1 className="text-2xl font-bold text-primary">Freedoctor.World</h1>
+              <div className="flex items-center gap-3">
+                <img src="/src/assets/logo.png" alt="Freedoctor.World" className="h-8 w-auto" />
+                <h1 className="text-2xl font-bold text-primary">Freedoctor.World</h1>
+              </div>
             </div>
           </header>
           <main className="flex-1 p-6">
@@ -30,6 +34,7 @@ const Index = () => {
               <Route path="/business-request" element={<BusinessRequest />} />
               <Route path="/proposals" element={<ProposalsPage />} />
               <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/auth" element={<AuthPage />} />
             </Routes>
           </main>
         </div>

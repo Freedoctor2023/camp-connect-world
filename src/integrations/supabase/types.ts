@@ -14,7 +14,223 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      business_requests: {
+        Row: {
+          address: string | null
+          business_name: string
+          camp_type: string
+          contact_email: string
+          contact_phone: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          preferred_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          business_name: string
+          camp_type: string
+          contact_email: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          preferred_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          business_name?: string
+          camp_type?: string
+          contact_email?: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          preferred_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      camps: {
+        Row: {
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          created_by: string | null
+          current_sponsorship: number
+          date: string
+          description: string | null
+          doctor_name: string
+          id: string
+          location: string
+          sponsorship_goal: number
+          status: string
+          time: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_sponsorship?: number
+          date: string
+          description?: string | null
+          doctor_name: string
+          id?: string
+          location: string
+          sponsorship_goal?: number
+          status?: string
+          time?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_sponsorship?: number
+          date?: string
+          description?: string | null
+          doctor_name?: string
+          id?: string
+          location?: string
+          sponsorship_goal?: number
+          status?: string
+          time?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          role?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      proposals: {
+        Row: {
+          business_request_id: string
+          created_at: string
+          created_by: string | null
+          description: string
+          duration_days: number | null
+          estimated_cost: number | null
+          id: string
+          proposed_date: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          business_request_id: string
+          created_at?: string
+          created_by?: string | null
+          description: string
+          duration_days?: number | null
+          estimated_cost?: number | null
+          id?: string
+          proposed_date?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          business_request_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          duration_days?: number | null
+          estimated_cost?: number | null
+          id?: string
+          proposed_date?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposals_business_request_id_fkey"
+            columns: ["business_request_id"]
+            isOneToOne: false
+            referencedRelation: "business_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sponsorships: {
+        Row: {
+          amount: number
+          camp_id: string
+          created_at: string
+          id: string
+          message: string | null
+          sponsor_email: string | null
+          sponsor_name: string
+          sponsor_phone: string | null
+        }
+        Insert: {
+          amount: number
+          camp_id: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          sponsor_email?: string | null
+          sponsor_name: string
+          sponsor_phone?: string | null
+        }
+        Update: {
+          amount?: number
+          camp_id?: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          sponsor_email?: string | null
+          sponsor_name?: string
+          sponsor_phone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sponsorships_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: false
+            referencedRelation: "camps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
