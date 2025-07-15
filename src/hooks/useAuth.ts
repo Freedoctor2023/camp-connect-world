@@ -57,7 +57,9 @@ export const useAuth = () => {
 
   const signInWithGoogle = async () => {
     console.log('🚀 Starting Google OAuth sign in...');
-    const redirectUrl = `${window.location.origin}/`;
+    
+    // Use the exact domain without any wildcards
+    const redirectUrl = window.location.origin + '/';
     console.log('🔗 Redirect URL:', redirectUrl);
     
     const { error } = await supabase.auth.signInWithOAuth({

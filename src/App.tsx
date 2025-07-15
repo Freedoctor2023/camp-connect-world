@@ -17,7 +17,16 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/*" element={<Index />} />
+          <Route path="/auth" element={<Index />} />
+          <Route path="/post-camp" element={<Index />} />
+          <Route path="/sponsor" element={<Index />} />
+          <Route path="/business-request" element={<Index />} />
+          <Route path="/proposals" element={<Index />} />
+          <Route path="/policies" element={<Index />} />
+          <Route path="/contact" element={<Index />} />
+          <Route path="/camp/:id" element={<Index />} />
+          <Route path="/admin" element={<Index />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
