@@ -28,28 +28,22 @@ const Index = () => {
     const handleOAuthCallback = () => {
       // Check if there are OAuth tokens in the URL hash
       const hash = window.location.hash;
+      const currentPath = window.location.pathname;
+      
       if (hash && hash.includes('access_token=')) {
         console.log('OAuth callback detected, processing tokens...');
         
-        // Clear the hash from the URL after a short delay to allow Supabase to process the tokens
-        setTimeout(() => {
-          window.history.replaceState({}, document.title, window.location.pathname);
-          
-          // Force redirect to home page after OAuth callback
-          navigate('/', { replace: true });
-        }, 1000);
+        // Immediately redirect to home and clear the hash
+        window.history.replaceState({}, document.title, '/');
+        navigate('/', { replace: true });
+      } else if (currentPath !== '/' && !loading && user) {
+        // If user is authenticated and not on a specific page, redirect to home
+        navigate('/', { replace: true });
       }
     };
 
     handleOAuthCallback();
-  }, [navigate]);
-
-  // Redirect authenticated users to home page
-  useEffect(() => {
-    if (!loading && user) {
-      navigate('/', { replace: true });
-    }
-  }, [loading, user, navigate]);
+  }, [navigate, loading, user]);
 
   return (
     <SidebarProvider>
