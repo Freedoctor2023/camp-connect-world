@@ -22,6 +22,7 @@ export type Database = {
           contact_email: string
           contact_phone: string | null
           created_at: string
+          created_by: string | null
           id: string
           notes: string | null
           preferred_date: string | null
@@ -35,6 +36,7 @@ export type Database = {
           contact_email: string
           contact_phone?: string | null
           created_at?: string
+          created_by?: string | null
           id?: string
           notes?: string | null
           preferred_date?: string | null
@@ -48,6 +50,7 @@ export type Database = {
           contact_email?: string
           contact_phone?: string | null
           created_at?: string
+          created_by?: string | null
           id?: string
           notes?: string | null
           preferred_date?: string | null
