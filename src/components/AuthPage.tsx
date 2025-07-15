@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
+import logo from "@/assets/logo.png";
 
 const AuthPage = () => {
   const [email, setEmail] = useState("");
@@ -78,7 +79,7 @@ const AuthPage = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <img src="/src/assets/logo.png" alt="Freedoctor.World" className="h-12 w-auto" />
+            <img src={logo} alt="Freedoctor.World" className="h-12 w-auto" />
           </div>
           <CardTitle className="text-2xl">Welcome to Freedoctor.World</CardTitle>
         </CardHeader>

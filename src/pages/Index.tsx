@@ -1,4 +1,5 @@
 
+import logo from "@/assets/logo.png";
 import { Routes, Route } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -21,7 +22,7 @@ const Index = () => {
             <div className="flex items-center gap-4">
               <SidebarTrigger />
               <div className="flex items-center gap-3">
-                <img src="/src/assets/logo.png" alt="Freedoctor.World" className="h-8 w-auto" />
+                <img src={logo} alt="Freedoctor.World" className="h-8 w-auto" />
                 <h1 className="text-2xl font-bold text-primary">Freedoctor.World</h1>
               </div>
             </div>
