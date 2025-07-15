@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,45 +8,38 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Building, Calendar, MapPin, Mail, FileText } from "lucide-react";
 import { toast } from "sonner";
-
-// Mock data - will be replaced with Supabase data
-const mockBusinessRequests = [
-  {
-    id: 1,
-    business_name: "TechCorp Solutions",
-    camp_type: "General Health Checkup",
-    preferred_date: "2024-03-01",
-    address: "123 Business Park, Tech District",
-    contact: "hr@techcorp.com",
-    notes: "Looking for comprehensive health screening for 200+ employees",
-    created_at: "2024-01-15"
-  },
-  {
-    id: 2,
-    business_name: "Green Manufacturing Ltd",
-    camp_type: "Eye Care Camp",
-    preferred_date: "2024-03-15",
-    address: "456 Industrial Avenue, Manufacturing Zone",
-    contact: "wellness@greenmanuf.com",
-    notes: "Many employees work with screens and machinery. Focus on eye strain and safety.",
-    created_at: "2024-01-18"
-  },
-  {
-    id: 3,
-    business_name: "Downtown Retail Group",
-    camp_type: "Diabetes Screening",
-    preferred_date: "2024-02-28",
-    address: "789 Shopping Center, Downtown",
-    contact: "manager@retailgroup.com",
-    notes: "Staff wellness initiative. Flexible with timing.",
-    created_at: "2024-01-20"
-  }
-];
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const ProposalsPage = () => {
-  const [proposals, setProposals] = useState<{[key: number]: {name: string, proposal: string}}>({});
+  const { user } = useAuth();
+  const [businessRequests, setBusinessRequests] = useState<any[]>([]);
+  const [proposals, setProposals] = useState<{[key: string]: {name: string, proposal: string}}>({});
+  const [loading, setLoading] = useState(true);
 
-  const handleProposalChange = (requestId: number, field: string, value: string) => {
+  useEffect(() => {
+    fetchBusinessRequests();
+  }, []);
+
+  const fetchBusinessRequests = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('business_requests')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setBusinessRequests(data || []);
+    } catch (error) {
+      console.error('Error fetching business requests:', error);
+      toast.error("Failed to load business requests");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProposalChange = (requestId: string, field: string, value: string) => {
     setProposals(prev => ({
       ...prev,
       [requestId]: {
@@ -56,23 +49,41 @@ const ProposalsPage = () => {
     }));
   };
 
-  const handleSubmitProposal = async (requestId: number) => {
+  const handleSubmitProposal = async (requestId: string) => {
+    if (!user) {
+      toast.error("Please login to submit a proposal");
+      return;
+    }
+
     const proposal = proposals[requestId];
     if (!proposal?.name || !proposal?.proposal) {
       toast.error("Please fill in both your name and proposal details");
       return;
     }
 
-    // TODO: Replace with Supabase integration
-    console.log("Proposal data:", { requestId, ...proposal });
-    
-    toast.success("Your proposal has been submitted successfully!");
-    
-    // Reset form for this request
-    setProposals(prev => ({
-      ...prev,
-      [requestId]: { name: "", proposal: "" }
-    }));
+    try {
+      const { error } = await supabase
+        .from('proposals')
+        .insert({
+          business_request_id: requestId,
+          title: `Proposal for ${businessRequests.find(r => r.id === requestId)?.business_name}`,
+          description: proposal.proposal,
+          created_by: user.id,
+        });
+
+      if (error) throw error;
+
+      toast.success("Your proposal has been submitted successfully!");
+      
+      // Reset form for this request
+      setProposals(prev => ({
+        ...prev,
+        [requestId]: { name: "", proposal: "" }
+      }));
+    } catch (error) {
+      console.error('Error submitting proposal:', error);
+      toast.error("Failed to submit proposal. Please try again.");
+    }
   };
 
   const getCampTypeColor = (type: string) => {
@@ -96,7 +107,12 @@ const ProposalsPage = () => {
       </div>
 
       <div className="grid gap-6">
-        {mockBusinessRequests.map((request) => (
+        {loading ? (
+          <div className="text-center py-8">Loading business requests...</div>
+        ) : businessRequests.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">No business requests available</div>
+        ) : (
+          businessRequests.map((request) => (
           <Card key={request.id} className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <div className="flex justify-between items-start">
@@ -119,11 +135,11 @@ const ProposalsPage = () => {
                 <div className="space-y-2">
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Calendar className="w-4 h-4 mr-2" />
-                    Preferred Date: {new Date(request.preferred_date).toLocaleDateString()}
+                    Preferred Date: {request.preferred_date ? new Date(request.preferred_date).toLocaleDateString() : 'Not specified'}
                   </div>
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Mail className="w-4 h-4 mr-2" />
-                    {request.contact}
+                    {request.contact_email}
                   </div>
                 </div>
                 <div className="flex items-start text-sm text-muted-foreground">
@@ -174,7 +190,8 @@ const ProposalsPage = () => {
               </div>
             </CardContent>
           </Card>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

@@ -7,8 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const BusinessRequest = () => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     business_name: "",
     camp_type: "",
@@ -21,20 +24,41 @@ const BusinessRequest = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // TODO: Replace with Supabase integration
-    console.log("Business request data:", formData);
+    if (!user) {
+      toast.error("Please login to submit a business request");
+      return;
+    }
     
-    toast.success("Your request has been submitted successfully! We'll contact you soon.");
-    
-    // Reset form
-    setFormData({
-      business_name: "",
-      camp_type: "",
-      preferred_date: "",
-      address: "",
-      contact: "",
-      notes: ""
-    });
+    try {
+      const { error } = await supabase
+        .from('business_requests')
+        .insert({
+          business_name: formData.business_name,
+          camp_type: formData.camp_type,
+          preferred_date: formData.preferred_date || null,
+          address: formData.address,
+          contact_email: formData.contact,
+          notes: formData.notes || null,
+          created_by: user.id,
+        });
+
+      if (error) throw error;
+
+      toast.success("Your request has been submitted successfully! We'll contact you soon.");
+      
+      // Reset form
+      setFormData({
+        business_name: "",
+        camp_type: "",
+        preferred_date: "",
+        address: "",
+        contact: "",
+        notes: ""
+      });
+    } catch (error) {
+      console.error('Error submitting business request:', error);
+      toast.error("Failed to submit request. Please try again.");
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

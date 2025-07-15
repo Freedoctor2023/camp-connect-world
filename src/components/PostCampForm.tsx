@@ -8,8 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const PostCampForm = () => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -27,25 +30,51 @@ const PostCampForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // TODO: Replace with Supabase integration
-    console.log("Camp data to submit:", formData);
+    if (!user) {
+      toast.error("Please login to post a medical camp");
+      return;
+    }
     
-    toast.success("Medical camp posted successfully!");
-    
-    // Reset form
-    setFormData({
-      title: "",
-      description: "",
-      date: "",
-      time: "",
-      location: "",
-      doctor_name: "",
-      contact: "",
-      campType: "free",
-      requiresSponsorship: false,
-      sponsorship_goal: "",
-      feeAmount: "",
-    });
+    try {
+      const { error } = await supabase
+        .from('camps')
+        .insert({
+          title: formData.title,
+          description: formData.description,
+          date: formData.date,
+          time: formData.time || null,
+          location: formData.location,
+          doctor_name: formData.doctor_name,
+          contact_email: formData.contact,
+          camp_type: formData.campType,
+          requires_sponsorship: formData.requiresSponsorship,
+          sponsorship_goal: formData.requiresSponsorship ? parseInt(formData.sponsorship_goal) : 0,
+          fee_amount: formData.campType === 'paid' ? parseInt(formData.feeAmount) : null,
+          created_by: user.id,
+        });
+
+      if (error) throw error;
+
+      toast.success("Medical camp posted successfully!");
+      
+      // Reset form
+      setFormData({
+        title: "",
+        description: "",
+        date: "",
+        time: "",
+        location: "",
+        doctor_name: "",
+        contact: "",
+        campType: "free",
+        requiresSponsorship: false,
+        sponsorship_goal: "",
+        feeAmount: "",
+      });
+    } catch (error) {
+      console.error('Error posting camp:', error);
+      toast.error("Failed to post camp. Please try again.");
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
