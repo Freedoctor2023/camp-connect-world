@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +38,7 @@ const mockCamps = [
 
 const SponsorCamp = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [sponsorshipData, setSponsorshipData] = useState<{[key: number]: {name: string, amount: string}}>({});
 
   const handleSponsorshipChange = (campId: number, field: string, value: string) => {
@@ -52,6 +54,7 @@ const SponsorCamp = () => {
   const handleSponsor = async (campId: number) => {
     if (!user) {
       toast.error("Please login to sponsor a camp");
+      navigate("/auth");
       return;
     }
 

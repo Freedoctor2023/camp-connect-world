@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const BusinessRequest = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     business_name: "",
     camp_type: "",
@@ -26,6 +28,7 @@ const BusinessRequest = () => {
     
     if (!user) {
       toast.error("Please login to submit a business request");
+      navigate("/auth");
       return;
     }
     
