@@ -1,6 +1,8 @@
 
 
 import { Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -15,8 +17,35 @@ import PoliciesPage from "@/components/PoliciesPage";
 import ContactPage from "@/components/ContactPage";
 import CampDetailsPage from "@/components/CampDetailsPage";
 import Footer from "@/components/Footer";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+
+  // Handle OAuth callback tokens in URL hash
+  useEffect(() => {
+    const handleOAuthCallback = () => {
+      // Check if there are OAuth tokens in the URL hash
+      const hash = window.location.hash;
+      if (hash && hash.includes('access_token=')) {
+        console.log('OAuth callback detected, processing tokens...');
+        
+        // Clear the hash from the URL after a short delay to allow Supabase to process the tokens
+        setTimeout(() => {
+          window.history.replaceState({}, document.title, window.location.pathname);
+          
+          // Redirect to home page after successful authentication
+          if (user) {
+            navigate('/', { replace: true });
+          }
+        }, 1000);
+      }
+    };
+
+    handleOAuthCallback();
+  }, [navigate, user]);
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
