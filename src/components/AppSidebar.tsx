@@ -21,7 +21,6 @@ const menuItems = [
   { title: "Proposals", url: "/proposals", icon: FileText },
   { title: "Policies", url: "/policies", icon: Scale },
   { title: "Contact", url: "/contact", icon: Phone },
-  { title: "Admin Panel", url: "/admin", icon: Shield },
 ];
 
 export function AppSidebar() {
