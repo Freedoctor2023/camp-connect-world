@@ -11,6 +11,10 @@ import BusinessRequest from "@/components/BusinessRequest";
 import ProposalsPage from "@/components/ProposalsPage";
 import AdminPanel from "@/components/AdminPanel";
 import AuthPage from "@/components/AuthPage";
+import PoliciesPage from "@/components/PoliciesPage";
+import ContactPage from "@/components/ContactPage";
+import CampDetailsPage from "@/components/CampDetailsPage";
+import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
@@ -34,10 +38,14 @@ const Index = () => {
               <Route path="/sponsor" element={<SponsorCamp />} />
               <Route path="/business-request" element={<BusinessRequest />} />
               <Route path="/proposals" element={<ProposalsPage />} />
+              <Route path="/policies" element={<PoliciesPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/camp/:id" element={<CampDetailsPage />} />
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/auth" element={<AuthPage />} />
             </Routes>
           </main>
+          <Footer />
         </div>
       </div>
     </SidebarProvider>

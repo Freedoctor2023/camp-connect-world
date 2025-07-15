@@ -1,6 +1,6 @@
 
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Plus, Heart, Building, FileText, Shield } from "lucide-react";
+import { Home, Plus, Heart, Building, FileText, Shield, Scale, Phone } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +19,8 @@ const menuItems = [
   { title: "Sponsor Camp", url: "/sponsor", icon: Heart },
   { title: "Business Request", url: "/business-request", icon: Building },
   { title: "Proposals", url: "/proposals", icon: FileText },
+  { title: "Policies", url: "/policies", icon: Scale },
+  { title: "Contact", url: "/contact", icon: Phone },
   { title: "Admin Panel", url: "/admin", icon: Shield },
 ];
 

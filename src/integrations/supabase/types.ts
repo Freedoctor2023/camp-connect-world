@@ -58,6 +58,7 @@ export type Database = {
       }
       camps: {
         Row: {
+          camp_type: string
           contact_email: string | null
           contact_phone: string | null
           created_at: string
@@ -66,8 +67,10 @@ export type Database = {
           date: string
           description: string | null
           doctor_name: string
+          fee_amount: number | null
           id: string
           location: string
+          requires_sponsorship: boolean
           sponsorship_goal: number
           status: string
           time: string | null
@@ -75,6 +78,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          camp_type?: string
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string
@@ -83,8 +87,10 @@ export type Database = {
           date: string
           description?: string | null
           doctor_name: string
+          fee_amount?: number | null
           id?: string
           location: string
+          requires_sponsorship?: boolean
           sponsorship_goal?: number
           status?: string
           time?: string | null
@@ -92,6 +98,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          camp_type?: string
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string
@@ -100,8 +107,10 @@ export type Database = {
           date?: string
           description?: string | null
           doctor_name?: string
+          fee_amount?: number | null
           id?: string
           location?: string
+          requires_sponsorship?: boolean
           sponsorship_goal?: number
           status?: string
           time?: string | null
