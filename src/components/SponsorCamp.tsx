@@ -8,6 +8,8 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Calendar, MapPin, User } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 // Mock data - will be replaced with Supabase data
 const mockCamps = [
@@ -34,6 +36,7 @@ const mockCamps = [
 ];
 
 const SponsorCamp = () => {
+  const { user } = useAuth();
   const [sponsorshipData, setSponsorshipData] = useState<{[key: number]: {name: string, amount: string}}>({});
 
   const handleSponsorshipChange = (campId: number, field: string, value: string) => {
@@ -47,22 +50,80 @@ const SponsorCamp = () => {
   };
 
   const handleSponsor = async (campId: number) => {
+    if (!user) {
+      toast.error("Please login to sponsor a camp");
+      return;
+    }
+
     const sponsorship = sponsorshipData[campId];
     if (!sponsorship?.name || !sponsorship?.amount) {
       toast.error("Please fill in both sponsor name and amount");
       return;
     }
 
-    // TODO: Replace with Supabase integration
-    console.log("Sponsorship data:", { campId, ...sponsorship });
-    
-    toast.success(`Thank you for sponsoring $${sponsorship.amount}!`);
-    
-    // Reset form for this camp
-    setSponsorshipData(prev => ({
-      ...prev,
-      [campId]: { name: "", amount: "" }
-    }));
+    try {
+      const { data, error } = await supabase.functions.invoke('create-razorpay-order', {
+        body: {
+          amount: parseFloat(sponsorship.amount),
+          camp_id: campId.toString(),
+          sponsor_name: sponsorship.name,
+          currency: 'INR',
+        },
+      });
+
+      if (error) throw error;
+
+      // Load Razorpay script
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => {
+        const options = {
+          key: data.key,
+          amount: data.amount,
+          currency: data.currency,
+          order_id: data.order_id,
+          name: 'Medical Camp Sponsorship',
+          description: `Sponsoring ${mockCamps.find(c => c.id === campId)?.title}`,
+          handler: async (response: any) => {
+            try {
+              const { error: verifyError } = await supabase.functions.invoke('verify-razorpay-payment', {
+                body: {
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                },
+              });
+
+              if (verifyError) throw verifyError;
+
+              toast.success("Thank you for your sponsorship!");
+
+              // Reset form
+              setSponsorshipData(prev => ({
+                ...prev,
+                [campId]: { name: '', amount: '' }
+              }));
+            } catch (error) {
+              console.error('Payment verification failed:', error);
+              toast.error("Payment verification failed. Please contact support.");
+            }
+          },
+          prefill: {
+            name: sponsorship.name,
+          },
+          theme: {
+            color: '#3399cc'
+          }
+        };
+
+        const rzp = new (window as any).Razorpay(options);
+        rzp.open();
+      };
+      document.head.appendChild(script);
+    } catch (error) {
+      console.error('Error creating payment:', error);
+      toast.error("Failed to initiate payment. Please try again.");
+    }
   };
 
   return (

@@ -122,6 +122,56 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_sessions: {
+        Row: {
+          amount: number
+          camp_id: string | null
+          created_at: string
+          currency: string | null
+          id: string
+          sponsor_email: string | null
+          sponsor_name: string | null
+          status: string | null
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          camp_id?: string | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          sponsor_email?: string | null
+          sponsor_name?: string | null
+          status?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          camp_id?: string | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          sponsor_email?: string | null
+          sponsor_name?: string | null
+          status?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_sessions_camp_id_fkey"
+            columns: ["camp_id"]
+            isOneToOne: false
+            referencedRelation: "camps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
