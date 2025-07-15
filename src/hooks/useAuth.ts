@@ -58,8 +58,8 @@ export const useAuth = () => {
   const signInWithGoogle = async () => {
     console.log('🚀 Starting Google OAuth sign in...');
     
-    // Use the exact domain without any wildcards
-    const redirectUrl = window.location.origin + '/';
+    // Use production domain for redirect
+    const redirectUrl = 'https://freedoctor.world/';
     console.log('🔗 Redirect URL:', redirectUrl);
     
     const { error } = await supabase.auth.signInWithOAuth({
