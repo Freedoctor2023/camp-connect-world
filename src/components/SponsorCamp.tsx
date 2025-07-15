@@ -15,7 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 // Mock data - will be replaced with Supabase data
 const mockCamps = [
   {
-    id: 1,
+    id: "550e8400-e29b-41d4-a716-446655440001",
     title: "Free Eye Checkup Camp",
     description: "Comprehensive eye examination and free glasses distribution",
     date: "2024-02-15",
@@ -25,7 +25,7 @@ const mockCamps = [
     current_sponsorship: 3200
   },
   {
-    id: 2,
+    id: "550e8400-e29b-41d4-a716-446655440002",
     title: "Diabetes Screening Camp",
     description: "Free blood sugar testing and diabetes consultation",
     date: "2024-02-20",
@@ -39,9 +39,9 @@ const mockCamps = [
 const SponsorCamp = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [sponsorshipData, setSponsorshipData] = useState<{[key: number]: {name: string, amount: string}}>({});
+  const [sponsorshipData, setSponsorshipData] = useState<{[key: string]: {name: string, amount: string}}>({});
 
-  const handleSponsorshipChange = (campId: number, field: string, value: string) => {
+  const handleSponsorshipChange = (campId: string, field: string, value: string) => {
     setSponsorshipData(prev => ({
       ...prev,
       [campId]: {
@@ -51,7 +51,7 @@ const SponsorCamp = () => {
     }));
   };
 
-  const handleSponsor = async (campId: number) => {
+  const handleSponsor = async (campId: string) => {
     if (!user) {
       toast.error("Please login to sponsor a camp");
       navigate("/auth");
@@ -68,7 +68,7 @@ const SponsorCamp = () => {
       const { data, error } = await supabase.functions.invoke('create-razorpay-order', {
         body: {
           amount: parseFloat(sponsorship.amount),
-          camp_id: campId.toString(),
+          camp_id: campId,
           sponsor_name: sponsorship.name,
           currency: 'INR',
         },
@@ -178,12 +178,12 @@ const SponsorCamp = () => {
                   <div className="flex justify-between text-sm">
                     <span>Funding Progress</span>
                     <span className="font-medium">
-                      ${camp.current_sponsorship} / ${camp.sponsorship_goal}
+                      ₹{camp.current_sponsorship} / ₹{camp.sponsorship_goal}
                     </span>
                   </div>
                   <Progress value={progressPercentage} className="h-2" />
                   <p className="text-xs text-muted-foreground">
-                    ${remaining > 0 ? remaining : 0} still needed
+                    ₹{remaining > 0 ? remaining : 0} still needed
                   </p>
                 </div>
 
@@ -200,7 +200,7 @@ const SponsorCamp = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor={`sponsor-amount-${camp.id}`}>Amount ($)</Label>
+                      <Label htmlFor={`sponsor-amount-${camp.id}`}>Amount (₹)</Label>
                       <Input
                         id={`sponsor-amount-${camp.id}`}
                         type="number"
