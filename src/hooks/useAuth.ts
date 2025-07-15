@@ -57,12 +57,13 @@ export const useAuth = () => {
 
   const signInWithGoogle = async () => {
     console.log('🚀 Starting Google OAuth sign in...');
-    console.log('🔗 Redirect URL:', window.location.origin);
+    const redirectUrl = `${window.location.origin}/`;
+    console.log('🔗 Redirect URL:', redirectUrl);
     
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin
+        redirectTo: redirectUrl
       }
     });
     
