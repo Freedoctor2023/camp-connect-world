@@ -22,7 +22,7 @@ const Index = () => {
             <div className="flex items-center gap-4">
               <SidebarTrigger />
               <div className="flex items-center gap-3">
-                <img src="/lovable-uploads/6fe10f9b-a47d-41e4-a10f-65e7c88af4c7.png" alt="Freedoctor.World" className="h-8 w-auto" />
+                <img src="/lovable-uploads/77473094-0c8e-4870-8a21-82dfb6bc828b.png" alt="Freedoctor.World" className="h-8 w-auto" />
                 <h1 className="text-2xl font-bold text-primary">Freedoctor.World</h1>
               </div>
             </div>

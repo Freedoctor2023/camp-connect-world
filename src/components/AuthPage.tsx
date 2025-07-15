@@ -79,7 +79,7 @@ const AuthPage = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <img src="/lovable-uploads/6fe10f9b-a47d-41e4-a10f-65e7c88af4c7.png" alt="Freedoctor.World" className="h-12 w-auto" />
+            <img src="/lovable-uploads/77473094-0c8e-4870-8a21-82dfb6bc828b.png" alt="Freedoctor.World" className="h-12 w-auto" />
           </div>
           <CardTitle className="text-2xl">Welcome to Freedoctor.World</CardTitle>
         </CardHeader>
