@@ -8,9 +8,12 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('🔧 Setting up auth state listener...');
+    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('🔄 Auth state change:', event, session?.user?.email || 'No user');
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
@@ -19,6 +22,7 @@ export const useAuth = () => {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('📋 Initial session check:', session?.user?.email || 'No session');
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -52,12 +56,22 @@ export const useAuth = () => {
   };
 
   const signInWithGoogle = async () => {
+    console.log('🚀 Starting Google OAuth sign in...');
+    console.log('🔗 Redirect URL:', window.location.origin);
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: window.location.origin
       }
     });
+    
+    if (error) {
+      console.error('❌ Google OAuth error:', error);
+    } else {
+      console.log('✅ Google OAuth initiated successfully');
+    }
+    
     return { error };
   };
 
