@@ -38,15 +38,11 @@ const Index = () => {
         // Immediately redirect to home and clear the hash
         window.history.replaceState({}, document.title, '/');
         navigate('/', { replace: true });
-      } else if (currentPath !== '/' && !loading && user) {
-        console.log('👤 User authenticated, redirecting to home');
-        // If user is authenticated and not on a specific page, redirect to home
-        navigate('/', { replace: true });
       }
     };
 
     handleOAuthCallback();
-  }, [navigate, loading, user]);
+  }, [navigate]);
 
   return (
     <SidebarProvider>
