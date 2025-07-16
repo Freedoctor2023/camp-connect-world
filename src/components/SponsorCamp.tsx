@@ -65,6 +65,8 @@ const SponsorCamp = () => {
     }
 
     try {
+      console.log("Creating Razorpay order...", { campId, sponsorship });
+      
       const { data, error } = await supabase.functions.invoke('create-razorpay-order', {
         body: {
           amount: parseFloat(sponsorship.amount),
@@ -74,59 +76,91 @@ const SponsorCamp = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
 
-      // Load Razorpay script
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.onload = () => {
-        const options = {
-          key: data.key,
-          amount: data.amount,
-          currency: data.currency,
-          order_id: data.order_id,
-          name: 'Medical Camp Sponsorship',
-          description: `Sponsoring ${mockCamps.find(c => c.id === campId)?.title}`,
-          handler: async (response: any) => {
-            try {
-              const { error: verifyError } = await supabase.functions.invoke('verify-razorpay-payment', {
-                body: {
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
-                },
-              });
+      console.log("Razorpay order created:", data);
 
-              if (verifyError) throw verifyError;
-
-              toast.success("Thank you for your sponsorship!");
-
-              // Reset form
-              setSponsorshipData(prev => ({
-                ...prev,
-                [campId]: { name: '', amount: '' }
-              }));
-            } catch (error) {
-              console.error('Payment verification failed:', error);
-              toast.error("Payment verification failed. Please contact support.");
-            }
-          },
-          prefill: {
-            name: sponsorship.name,
-          },
-          theme: {
-            color: '#3399cc'
-          }
+      // Check if Razorpay script is already loaded
+      if (!(window as any).Razorpay) {
+        // Load Razorpay script
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => {
+          console.log("Razorpay script loaded, opening gateway...");
+          openRazorpayGateway(data, sponsorship, campId);
         };
-
-        const rzp = new (window as any).Razorpay(options);
-        rzp.open();
-      };
-      document.head.appendChild(script);
+        script.onerror = () => {
+          console.error("Failed to load Razorpay script");
+          toast.error("Failed to load payment gateway. Please try again.");
+        };
+        document.head.appendChild(script);
+      } else {
+        console.log("Razorpay script already loaded, opening gateway...");
+        openRazorpayGateway(data, sponsorship, campId);
+      }
     } catch (error) {
       console.error('Error creating payment:', error);
       toast.error("Failed to initiate payment. Please try again.");
     }
+  };
+
+  const openRazorpayGateway = (data: any, sponsorship: any, campId: string) => {
+    const options = {
+      key: data.key,
+      amount: data.amount,
+      currency: data.currency,
+      order_id: data.order_id,
+      name: 'Medical Camp Sponsorship',
+      description: `Sponsoring ${mockCamps.find(c => c.id === campId)?.title}`,
+      handler: async (response: any) => {
+        try {
+          console.log("Payment successful, verifying...", response);
+          
+          const { error: verifyError } = await supabase.functions.invoke('verify-razorpay-payment', {
+            body: {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            },
+          });
+
+          if (verifyError) {
+            console.error('Payment verification error:', verifyError);
+            throw verifyError;
+          }
+
+          toast.success(`Thank you for your sponsorship! ₹${sponsorship.amount} has been contributed to ${mockCamps.find(c => c.id === campId)?.title}`);
+
+          // Reset form
+          setSponsorshipData(prev => ({
+            ...prev,
+            [campId]: { name: '', amount: '' }
+          }));
+        } catch (error) {
+          console.error('Payment verification failed:', error);
+          toast.error("Payment verification failed. Please contact support.");
+        }
+      },
+      modal: {
+        ondismiss: () => {
+          console.log("Payment gateway closed by user");
+          toast.info("Payment was cancelled");
+        }
+      },
+      prefill: {
+        name: sponsorship.name,
+      },
+      theme: {
+        color: '#3399cc'
+      }
+    };
+
+    console.log("Opening Razorpay gateway with options:", options);
+    const rzp = new (window as any).Razorpay(options);
+    rzp.open();
   };
 
   return (
